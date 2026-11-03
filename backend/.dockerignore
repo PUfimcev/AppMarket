@@ -1,0 +1,8 @@
+.git
+.env
+vendor
+node-modules
+storage/logs
+storage/framework/cache
+storage/framework/views
+storage/framework/sessions
