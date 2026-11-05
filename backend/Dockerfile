@@ -8,7 +8,7 @@ RUN npm run build
 
 FROM php:8.5.12-fpm
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     unzip \
@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libpng-dev \
     libjpeg62-turbo-dev \
-    libfreetype6-dev
+    libfreetype6-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd \
     --with-freetype \
@@ -27,15 +28,14 @@ RUN docker-php-ext-configure gd \
 RUN docker-php-ext-install \
     pdo \
     pdo_pgsql \
-    gd  \
+    gd \
     intl \
     zip \
     bcmath
 
-ARG REDIS_PECL_VERSION=6.2.0
-
 COPY --from=composer:2.8.12 /usr/bin/composer /usr/bin/composer
 
+ARG REDIS_PECL_VERSION=6.2.0
 RUN pecl install "redis-${REDIS_PECL_VERSION}" \
     && docker-php-ext-enable redis
 
@@ -47,6 +47,3 @@ COPY --from=node /app/public/build ./public/build
 RUN chown -R www-data:www-data storage bootstrap/cache
 EXPOSE 9000
 CMD ["php-fpm"]
-
-
-
