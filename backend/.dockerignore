@@ -1,7 +1,11 @@
 .git
 .env
+.env.*
 vendor
-node-modules
+node_modules
+tests
+.phpunit.result.cache
+README.md
 storage/logs
 storage/framework/cache
 storage/framework/views
