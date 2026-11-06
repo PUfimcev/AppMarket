@@ -16,12 +16,12 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: frontend
       dockerfile: Dockerfile.dev
     container_name: frontend
     restart: unless-stopped
     env_file:
-      - ./frontend/.env.local
+      - frontend/.env.local
     healthcheck:
       test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:3000/ || exit 1" ]
       interval: 10s
@@ -36,11 +36,11 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: backend
     container_name: backend
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - backend/.env
     healthcheck:
       test: [ "CMD-SHELL", "pgrep -f 'php-fpm: master' >/dev/null || exit 1" ]
       interval: 10s
@@ -150,7 +150,7 @@ services:
 
   worker:
     build:
-      context: ./backend
+      context: backend
 
     command:
       - php
@@ -162,7 +162,7 @@ services:
       - --max-jobs=1000
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - backend/.env
     depends_on:
       postgres:
         condition: service_healthy
