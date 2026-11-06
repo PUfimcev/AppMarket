@@ -5,8 +5,8 @@ Docker stack: **nginx** → **Next.js** (UI) + **Laravel** (API / Filament paths
 ## Prerequisites
 
 - Docker Compose v2
-- Laravel app in `backend/` (with `composer.json`, `Dockerfile` build context)
-- Next.js app in `frontend/` (prod `Dockerfile` needs `output: 'standalone'` in `next.config`)
+- Laravel app in `backend1` (with `composer.json`, `Dockerfile` build context)
+- Next.js app in `frontend1` (prod `Dockerfile` needs `output: 'standalone'` in `next.config`)
 
 ## Setup
 
@@ -17,7 +17,7 @@ cp frontend/.env.example frontend/.env.local
 # After Laravel is installed: php artisan key:generate (in backend/)
 ```
 
-Edit passwords in `.env` and `backend/.env`. `MEILISEARCH_KEY` in `backend/.env` must match `MEILI_MASTER_KEY` in root `.env`.
+Edit passwords in `.env` and `backend1`. `MEILISEARCH_KEY` in `backend1` must match `MEILI_MASTER_KEY` in root `.env`.
 
 ## Run
 
@@ -43,6 +43,6 @@ docker compose up -d --build frontend
 ## Notes
 
 - Root `.env` — infra services only (Postgres, MinIO, Meili, RabbitMQ).
-- `backend/.env` — Laravel (DB hosts are **Docker service names**: `postgres`, `redis`, `minio`, `meilisearch`).
+- `backend1` — Laravel (DB hosts are **Docker service names**: `postgres`, `redis`, `minio`, `meilisearch`).
 - Files: S3-compatible **MinIO**, not nginx `/storage/`.
 - HTTPS: terminate TLS on nginx (443 + certs); keep internal `http://frontend:3000` and FastCGI to `backend:9000`.

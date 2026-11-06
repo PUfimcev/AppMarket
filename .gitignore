@@ -1,15 +1,15 @@
 # Laravel
-/backend/vendor/
-/backend/.env
-/backend/node_modules
-/backend/public/hot
-/backend/public/build
-/backend/storage/logs/*
+/backend1/vendor/
+/backend1/.env
+/backend1/node_modules
+/backend1/public/hot
+/backend1/public/build
+/backend1/storage/logs/*
 
 # Next.js
-/frontend/node_modules
-/frontend/.next/
-/frontend/.env.local
+/frontend1/node_modules
+/frontend1/.next/
+/frontend1/.env.local
 
 # Compose
 docker-compose.override.yml
