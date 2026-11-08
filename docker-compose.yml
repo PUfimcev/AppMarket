@@ -17,7 +17,7 @@ services:
   frontend:
     build:
       context: frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: frontend
     restart: unless-stopped
     env_file:
@@ -28,21 +28,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     networks:
       - appmarket
 
   backend:
     build:
       context: backend
+      dockerfile: Dockerfile
     container_name: backend
     restart: unless-stopped
     env_file:
       - backend/.env
     healthcheck:
-      test: [ "CMD-SHELL", "pgrep -f 'php-fpm: master' >/dev/null || exit 1" ]
+      test: [ "CMD-SHELL", "[ \"$$(cat /proc/1/comm)\" = php-fpm ]" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -65,15 +63,13 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: [ "CMD-shell", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 3
-
-    ports:
-      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # PostgreSQL 18+ images expect a single mount at /var/lib/postgresql (not .../data)
+      - postgres_data:/var/lib/postgresql
     networks:
       - appmarket
 
@@ -81,15 +77,15 @@ services:
     image: redis:8.8
     container_name: redis
     command:
-      - redis-server --appendonly yes
+      - redis-server
+      - --appendonly
+      - yes
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 3s
       retries: 5
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -104,29 +100,10 @@ services:
       timeout: 5s
       retries: 5
     restart: unless-stopped
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     env_file:
       - .env
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - appmarket
-
-  minio:
-    image: quay.io/minio/minio
-    container_name: minio
-    command:
-      - server /data --console-address ":9001"
-    restart: unless-stopped
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    env_file:
-      - .env
-    volumes:
-      - minio_data:/data
     networks:
       - appmarket
 
@@ -143,15 +120,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-      - "7700:7700"
     networks:
       - appmarket
 
   worker:
     build:
       context: backend
-
+      dockerfile: Dockerfile
     command:
       - php
       - artisan
@@ -172,19 +147,15 @@ services:
         condition: service_healthy
       meilisearch:
         condition: service_healthy
-
     networks:
       - appmarket
 
 volumes:
   redis_data:
   rabbitmq_data:
-  minio_data:
   postgres_data:
   meilisearch_data:
 
 networks:
   appmarket:
     driver: bridge
-
-
