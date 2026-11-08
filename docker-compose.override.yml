@@ -1,0 +1,39 @@
+services:
+
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  backend:
+    build:
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/var/www
+      - /var/www/vendor
+
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/var/www
+      - /var/www/vendor
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  meilisearch:
+    ports:
+      - "7700:7700"

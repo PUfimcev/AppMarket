@@ -11,10 +11,6 @@
 /frontend1/.next/
 /frontend1/.env.local
 
-# Compose
-docker-compose.override.yml
-
-
 #IDE
 .idea/
 .vscode/
