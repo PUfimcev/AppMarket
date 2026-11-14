@@ -44,6 +44,12 @@ docker compose exec backend php artisan migrate --force
 | http://localhost:15672 | RabbitMQ management |
 | http://localhost:7700 | Meilisearch (dev; do not expose in prod) |
 
+## Cursor + Laravel Boost
+
+Open the **`AppMarket`** folder in Cursor (monorepo root). Enable **`laravel-boost`** in **MCP Settings** (Cmd+Shift+P → Open MCP Settings). Boost runs inside the `backend` container (`php artisan boost:mcp`); keep `docker compose up -d` while using it.
+
+Laravel AI rules: `backend/AGENTS.md`. After Boost updates: `docker compose exec backend php artisan boost:update`.
+
 ## Notes
 
 - Root `.env` — infra services only (Postgres, Meili, RabbitMQ).
