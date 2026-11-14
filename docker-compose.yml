@@ -79,7 +79,7 @@ services:
     command:
       - redis-server
       - --appendonly
-      - yes
+      - "yes"
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
@@ -146,6 +146,25 @@ services:
       rabbitmq:
         condition: service_healthy
       meilisearch:
+        condition: service_healthy
+    networks:
+      - appmarket
+
+  scheduler:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    command:
+      - php
+      - artisan
+      - schedule:work
+    restart: unless-stopped
+    env_file:
+      - backend/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - appmarket
