@@ -11,6 +11,12 @@
 /frontend1/.next/
 /frontend1/.env.local
 
+# Compose (local dev only)
+docker-compose.override.yml
+
+# Cursor — keep rules/skills in git; optional local MCP secrets
+.cursor/mcp.local.json
+
 #IDE
 .idea/
 .vscode/
