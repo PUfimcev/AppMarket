@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Observers\ImageObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Notifications\Notifiable;
 
 #[Fillable("path")]
+#[ObservedBy([ImageObserver::class])]
 class Image extends Model
 {
     use Notifiable;

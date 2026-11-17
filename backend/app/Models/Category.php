@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Observers\CategoryObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,13 +15,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
 #[Fillable(["parent_id", "slug", "name", "description", "new_text", "icon_url"])]
+#[ObservedBy([CategoryObserver::class])]
 class Category extends Model
 {
     use HasFactory, Notifiable, softDeletes;
 
     protected $appends = ['parent_name'];
 
-    protected $touches = ['category'];
 
     public function children(): HasMany
     {
