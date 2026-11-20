@@ -12,21 +12,21 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/var/www
-      - /var/www/vendor
+      - backend_vendor:/var/www/vendor
 
   worker:
     build:
       dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/var/www
-      - /var/www/vendor
+      - backend_vendor:/var/www/vendor
 
   scheduler:
     build:
       dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/var/www
-      - /var/www/vendor
+      - backend_vendor:/var/www/vendor
 
   postgres:
     ports:
@@ -44,3 +44,6 @@ services:
   meilisearch:
     ports:
       - "7700:7700"
+
+volumes:
+  backend_vendor:

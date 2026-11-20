@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Category;
 use App\Models\Image;
+use Illuminate\Support\Facades\Cache;
 
 class CategoryObserver
 {
@@ -22,10 +23,14 @@ class CategoryObserver
     {
         //
     }
+    public function updating(Category $category): void
+    {
+        Cache::forget("api:category:{$category->slug}");
+    }
 
     public function deleting(Category $category): void
     {
-
+        Cache::forget("api:category:{$category->slug}");
     }
 
     /**
@@ -43,6 +48,10 @@ class CategoryObserver
     {
         //
     }
+    public function restoring(Category $category): void
+    {
+        Cache::forget("api:category:{$category->slug}");
+    }
 
     /**
      * Handle the Category "force deleted" event.
@@ -54,6 +63,9 @@ class CategoryObserver
 
     public function forceDeleting(Category $category): void
     {
+        Cache::forget("api:category:{$category->slug}");
+
         $category->images()->lazy()->each(fn(Image $image) => $image->delete());
+
     }
 }
