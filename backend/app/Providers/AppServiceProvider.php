@@ -3,7 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,5 +27,20 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'category' => Category::class,
         ]);
+
+        RateLimiter::for('api', function (Request $request){
+            if($request->user()?->is_admin){
+                return Limit::none();
+            }
+
+            return [
+                Limit::perMinute(60)->by(
+                    $request->user()?->id ?: $request->ip()
+                ),
+                Limit::perHour(100)->by(
+                    $request->user()?->id ?: $request->ip()
+                ),
+            ];
+        });
     }
 }

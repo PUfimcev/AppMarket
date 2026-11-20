@@ -2,7 +2,9 @@
 
 namespace App\Observers;
 
+use App\Models\Category;
 use App\Models\Image;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class ImageObserver
@@ -32,6 +34,8 @@ class ImageObserver
     }
     public function deleting(Image $image): void
     {
+        $this->forgetRelatedCategoryCache($image);
+
         if(filled($image->path)){
             Storage::disk(config('filesystems.default'))->delete($image->path);
         }
@@ -52,5 +56,20 @@ class ImageObserver
     public function forceDeleted(Image $image): void
     {
         //
+    }
+
+    private function forgetRelatedCategoryCache(Image $image): void
+    {
+        if ($image->imageable_type !== Category::class) {
+            return;
+        }
+
+        $slug = $image->imageable instanceof Category
+            ? $image->imageable->slug
+            : Category::withTrashed()->whereKey($image->imageable_id)->value('slug');
+
+        if (filled($slug)) {
+            Cache::forget("api:category:{$slug}");
+        }
     }
 }
