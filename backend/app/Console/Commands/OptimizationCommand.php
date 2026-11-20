@@ -24,12 +24,12 @@ class OptimizationCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info("Optimize");
-        $configResult = $this->call('optimize');
-        if($configResult === self::FAILURE){
-            $this->error("Optimize failed");
-            return self::FAILURE;
-        }
+//        $this->info("Optimize");
+//        $configResult = $this->call('optimize');
+//        if($configResult === self::FAILURE){
+//            $this->error("Optimize failed");
+//            return self::FAILURE;
+//        }
 
         $this->info('All is done successfully.');
         return self::SUCCESS;
