@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Category;
+use App\Models\Image;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
@@ -26,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Relation::enforceMorphMap([
             'category' => Category::class,
+            'user' => User::class,
+            'image' => Image::class,
         ]);
 
         RateLimiter::for('api', function (Request $request){
