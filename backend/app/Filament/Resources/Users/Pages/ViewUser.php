@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Users\Pages;
 
-use App\Filament\Resources\Users\Concerns\CustomActions;
 use App\Filament\Resources\Users\UserResource;
+use App\Filament\Service\CustomActions;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
