@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Users\Concerns;
+namespace App\Filament\Service;
 
 use Filament\Actions\Action;
 

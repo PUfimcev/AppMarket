@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Users\Pages;
 
-use App\Filament\Resources\Users\Concerns\CustomActions;
 use App\Filament\Resources\Users\UserResource;
+use App\Filament\Service\CustomActions;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
