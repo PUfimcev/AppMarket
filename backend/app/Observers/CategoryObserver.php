@@ -14,7 +14,7 @@ class CategoryObserver
      */
     public function created(Category $category): void
     {
-        //
+        Cache::forget('api:categories');
     }
 
     /**
@@ -35,11 +35,13 @@ class CategoryObserver
     public function updating(Category $category): void
     {
         Cache::forget("api:category:{$category->slug}");
+        Cache::forget("api:categories");
     }
 
     public function deleting(Category $category): void
     {
         Cache::forget("api:category:{$category->slug}");
+        Cache::forget("api:categories");
     }
 
     /**
@@ -60,6 +62,7 @@ class CategoryObserver
     public function restoring(Category $category): void
     {
         Cache::forget("api:category:{$category->slug}");
+        Cache::forget("api:categories");
     }
 
     /**
@@ -73,6 +76,7 @@ class CategoryObserver
     public function forceDeleting(Category $category): void
     {
         Cache::forget("api:category:{$category->slug}");
+        Cache::forget("api:categories");
 
         if (filled($category->icon_url)) {
             Storage::disk("s3")->delete($category->icon_url);

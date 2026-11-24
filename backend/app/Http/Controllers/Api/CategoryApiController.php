@@ -16,16 +16,19 @@ class CategoryApiController extends Controller
      */
     public function __invoke(Category $category): JsonResponse
     {
-        $category->loadMissing(
-            $category->parent_id === null
-                ? ['children.parent', 'children', 'images']
-                : ['parent', 'images']
-        );
 
         $payload = Cache::remember(
             "api:category:{$category->slug}",
-            now()->addSeconds(10),
-            fn () => CategoryResource::make($category)->resolve(request())
+            now()->addSeconds(30),
+            function () use ($category) {
+                $category->loadMissing(
+                    $category->parent_id === null
+                        ? ['children.parent', 'children', 'images']
+                        : ['parent', 'images']
+                );
+
+                return CategoryResource::make($category)->resolve(request());
+            }
         );
 
         return ApiResponse::success($payload);
