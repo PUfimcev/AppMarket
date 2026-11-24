@@ -71,5 +71,6 @@ class ImageObserver
         if (filled($slug)) {
             Cache::forget("api:category:{$slug}");
         }
+        Cache::forget("api:categories");
     }
 }
