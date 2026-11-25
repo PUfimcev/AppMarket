@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TopCategoriesResource;
+use App\Http\Resources\CategoryResource;
 use App\Http\Services\ApiResponse;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
-class TopCategoriesApiController extends Controller
+class CategoriesApiController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -20,12 +20,12 @@ class TopCategoriesApiController extends Controller
             'api:categories',
             now()->addSeconds(10),
             function () {
-                $categories = Category::query()
+                $categories = Category::with('children')
                     ->whereNull('parent_id')
                     ->orderBy('id')
                     ->get();
 
-                return TopCategoriesResource::collection($categories)->resolve(request());
+                return CategoryResource::collection($categories)->resolve(request());
             }
         );
 
