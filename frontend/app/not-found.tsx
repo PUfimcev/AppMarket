@@ -13,6 +13,7 @@ export default function NotFound() {
         <Link
           href="/"
           className="mt-10 inline-flex min-w-[11rem] items-center justify-center rounded-full bg-[#0071e3] px-7 py-3 text-base font-medium text-white transition-colors hover:bg-[#0077ed] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0071e3]"
+          transitionTypes={['nav-forward']}
         >
           Go to homepage
         </Link>

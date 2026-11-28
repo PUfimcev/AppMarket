@@ -1,10 +1,32 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
+  --background: #f5f5f7;
   --foreground: #171717;
-  /* Fallback until next/font sets Inter on <html className={inter.variable}> */
   --font-inter: ui-sans-serif, system-ui, sans-serif;
+  /* Apple sk-* — override on :root if needed; defaults via safe-area env */
+  --sk-safe-area-inset-start: env(safe-area-inset-left, 0px);
+  --sk-safe-area-inset-end: env(safe-area-inset-right, 0px);
+  --r-globalnav-safe-area-inset-start: var(--sk-safe-area-inset-start);
+  --r-globalnav-safe-area-inset-end: var(--sk-safe-area-inset-end);
+  --r-globalnav-height: 44px;
+  --r-globalnav-duration-medium: 0.24s;
+  --r-globalnav-flyout-rate: 0s;
+  --r-globalnav-flyout-spacing: 32px;
+  --r-globalnav-color: rgba(0, 0, 0, 0.8);
+  --r-globalnav-color-hover: #000000;
+  --r-globalnav-color-secondary: #333336;
+  --globalnav-scrim-bg: rgba(250, 250, 252, 0.92);
+  --globalnav-flyout-bg: #f5f5f7;
+  --globalnav-backdrop-filter: saturate(180%) blur(20px);
+  --globalnav-curtain: rgba(232, 232, 237, 0.4);
+  --duration-exit: 150ms;
+  --duration-enter: 210ms;
+  --duration-move: 400ms;
+  --viewport-max-width: 1260px;
+  --viewport-inline-padding: calc(
+    (100vw - min(87.5vw, var(--viewport-max-width, 1260px))) / 2
+  );
 }
 
 @theme inline {
@@ -13,18 +35,111 @@
   --font-sans: var(--font-inter, ui-sans-serif), system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+  --animate-nav-drop-in: nav-drop-in 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+  --animate-globalnav-flyout-link-in: globalnav-flyout-link-in 0.5s ease both;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --r-globalnav-color: rgba(255, 255, 255, 0.8);
+    --r-globalnav-color-hover: #ffffff;
+    --r-globalnav-color-secondary: #e8e8ed;
+    --globalnav-scrim-bg: rgba(22, 22, 23, 0.92);
+    --globalnav-flyout-bg: #161617;
+    --globalnav-curtain: rgba(0, 0, 0, 0.4);
+  }
+}
+
+@media (max-width: 833px) {
+  :root {
+    --r-globalnav-height: 48px;
   }
 }
 
 body {
-  background: var(--background);
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  background-color: var(--background);
   color: var(--foreground);
+}
+
+main {
+  flex: 1;
+  box-sizing: border-box;
+  width: 100%;
+  padding-inline: var(--viewport-inline-padding);
+  background-color: var(--background);
+  color: inherit;
+}
+
+.globalnav-content {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1024px;
+  margin-inline: auto;
+  padding-inline-start: max(22px, var(--r-globalnav-safe-area-inset-start));
+  padding-inline-end: max(22px, var(--r-globalnav-safe-area-inset-end));
+}
+
+.site-header .globalnav-content {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Flyout / curtain — :has() and height transitions (остаётся в CSS) */
+
+.site-header:has(.globalnav-item:has(.globalnav-submenu):is(:hover, :focus-within)) {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.site-header:has(.globalnav-item:has(.globalnav-submenu):is(:hover, :focus-within))
+  .globalnav-curtain {
+  visibility: visible;
+  opacity: 1;
+  transition:
+    opacity 0.32s cubic-bezier(0.4, 0, 0.6, 1) 80ms,
+    visibility 0.32s step-start 80ms;
+}
+
+.globalnav-list:has(.globalnav-item:has(.globalnav-submenu):is(:hover, :focus-within))
+  .globalnav-item:not(:is(:hover, :focus-within))
+  .globalnav-link {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--r-globalnav-duration-medium) cubic-bezier(0.4, 0, 0.6, 1),
+    visibility var(--r-globalnav-duration-medium) step-end;
+}
+
+.globalnav-submenu {
+  transition:
+    max-height 0.32s cubic-bezier(0.4, 0, 0.6, 1),
+    opacity var(--r-globalnav-duration-medium) cubic-bezier(0.4, 0, 0.6, 1),
+    visibility var(--r-globalnav-duration-medium);
+  transition-delay: var(--r-globalnav-flyout-rate);
+}
+
+.globalnav-item:is(:hover, :focus-within) .globalnav-submenu {
+  max-height: min(70vh, 520px);
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@keyframes globalnav-flyout-link-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 ::view-transition-group(site-header) {
@@ -68,21 +183,45 @@ body {
     400ms ease-in-out both slide;
 }
 
-@keyframes slide {
-  from {
-    translate: var(--slide-offset);
-  }
-  to {
-    translate: 0;
+::view-transition-old(.slide-down) {
+  animation:
+    var(--duration-exit) ease-out both fade reverse,
+    var(--duration-exit) ease-out both slide-y reverse;
+}
+::view-transition-new(.slide-up) {
+  animation:
+    var(--duration-enter) ease-in var(--duration-exit) both fade,
+    var(--duration-move) ease-in both slide-y;
+}
+
+::view-transition-group(.morph) {
+  animation-duration: 400ms;
+}
+::view-transition-image-pair(.morph) {
+  animation-name: via-blur;
+}
+@keyframes via-blur {
+  30% {
+    filter: blur(3px);
   }
 }
 
 @keyframes fade {
   from {
+    filter: blur(3px);
     opacity: 0;
   }
   to {
+    filter: blur(0);
     opacity: 1;
+  }
+}
+@keyframes slide-y {
+  from {
+    transform: translateY(10px);
+  }
+  to {
+    transform: translateY(0);
   }
 }
 
@@ -92,5 +231,31 @@ body {
   }
   to {
     transform: translateX(100%);
+  }
+}
+
+@keyframes nav-drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-nav-drop-in {
+    animation: none;
+  }
+
+  .globalnav-submenu,
+  .globalnav-curtain {
+    transition: none;
+  }
+
+  .globalnav-item:is(:hover, :focus-within) .animate-globalnav-flyout-link-in {
+    animation: none;
   }
 }
