@@ -1,29 +1,43 @@
 import { cacheLife } from 'next/cache'
 
-export type TopCategory = {
+export type CategoryChild = {
   slug: string
   name: string
+  description: string
+  new_text: string
+  icon_url: string
+  parent_slug: string
+  parent_name: string
 }
 
-type TopCategoriesApiResponse = {
+export type Category = {
+  slug: string
+  name: string
+  description: string
+  new_text: string
+  icon_url: string
+  children: CategoryChild[]
+}
+
+type CategoriesApiResponse = {
   success: boolean
   message: string
-  data: TopCategory[]
+  data: Category[]
 }
-export async function getTopCategories(): Promise<TopCategory[]> {
+export async function getCategories(): Promise<Category[]> {
   'use cache'
 
   cacheLife({ revalidate: 10, stale: 10, expire: 300 })
 
-  const response = await fetch(`${process.env.API_URL}/top-categories`, {
+  const response = await fetch(`${process.env.API_URL}/categories`, {
     next: { revalidate: 10 },
   })
 
   if (!response.ok) {
-    throw new Error(`Failed: HTTP ${response.status}`)
+    return []
   }
 
-  const body = (await response.json()) as TopCategoriesApiResponse
+  const body = (await response.json()) as CategoriesApiResponse
 
   if (!body.success || !Array.isArray(body.data)) {
     return []
